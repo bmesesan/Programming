@@ -1,9 +1,9 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <unordered_set>
 
 using namespace std;
-
 
 // 0) A linked list node
 class Node
@@ -30,6 +30,11 @@ class LinkedList
             m_head = NULL;
         }
 
+        LinkedList(Node *f_head)
+        {
+            m_head = f_head;
+        }
+
         void setHead(Node *f_head)
         {
             m_head = f_head;
@@ -38,6 +43,14 @@ class LinkedList
         Node* getHead(void)
         {
             return m_head;   
+        }
+
+        Node* getNodeAtIdx(int f_idx) {
+            Node* ptr = m_head;
+            for (int i = 0; i < f_idx; i++) {
+                ptr = ptr->next;
+            }
+            return ptr;
         }
 
         // 1) Display elements of linked list
@@ -272,6 +285,116 @@ class LinkedList
             headRef->next = next;
             m_head = prev;
         }
+
+        // 8.1) Detect a loop within a linked list
+        // Return true if a loop is detected in the linked list
+        bool detectLoop(void)
+        {
+            std::unordered_set<Node*> my_set;
+            Node* curr = m_head;
+            
+            while(curr != NULL) {
+                if(my_set.find(curr) != my_set.end()) {
+                    return true;
+                }
+                my_set.insert(curr);
+                curr = curr->next;
+            }
+
+            return false;
+        }
+
+        // 8.2) Detect loop in a linked list using Floyd’s Cycle-Finding Algorithm
+        // Traverse linked list using two pointers.
+        // Move one pointer(slow_p) by one and another pointer(fast_p) by two.
+        // If these pointers meet at the same node then there is a loop.
+        // If pointers do not meet then the linked list doesn’t have a loop.
+        bool detectLoopFloyd(void)
+        {
+            Node* fast = m_head;
+            Node* slow = m_head;
+
+            while(fast != NULL) {
+                fast = fast->next;
+                if (fast == slow) {
+                    return true;
+                }
+                if (fast != NULL) {
+                    fast = fast->next;
+                    slow = slow->next;
+                    if (fast == slow) {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+        
+        // 8.3) Function to remove loop.
+        // loop_node --> Pointer to one of the loop nodes
+        void removeLoop(Node* f_loop_node)
+        {
+            Node* ptr1 = f_loop_node;
+            Node* ptr2 = f_loop_node;
+
+            // Count the number of nodes in the loop
+            unsigned int k = 1, i;
+            while (ptr1->next != ptr2) {
+                ptr1 = ptr1->next;
+                k++;
+            }
+
+            // Set pointer 1 to the head
+            ptr1 = m_head;
+
+            // Set ptr2 K nodes after the head
+            ptr2 = m_head;
+            for(i = 0; i < k; i++) {
+                ptr2 = ptr2 -> next;
+            }
+
+            // In order to find the start of the loop, move ptr1 and ptr2 until they are equal
+            while (ptr1 != ptr2) {
+                ptr1 = ptr1->next;
+                ptr2 = ptr2->next;
+            }
+
+            // Get a pointer to the last node of the loop
+            while (ptr2->next != ptr1) {
+                ptr2 = ptr2->next;
+            }
+
+            // Set the next pointer of the last loop node to NULL
+            ptr2->next = NULL;
+
+        }
+
+        // 8.3) Detect the loop usign Floyd algorithm and remove it
+        bool detectAndRemoveLoop(void)
+        {
+            Node* slow = m_head;
+            Node* fast = m_head;
+
+            while (fast != NULL) {
+                fast = fast->next;
+                if (fast == slow) {
+                    removeLoop(slow);
+                    return true;
+                }
+                if (fast != NULL) {
+                    fast = fast->next;
+                    slow = slow->next;
+                    if (fast == slow) {
+                        removeLoop(slow);
+                        return true;
+                    }
+                }
+                
+            }
+
+            return false;
+        }
 };
 
 // 5) Sorted mergew of two linked lists
@@ -360,20 +483,32 @@ int main()
     // Start with the empty list
     LinkedList *my_list_1 = new LinkedList();
 
-    my_list_1->append(6);
-    my_list_1->append(5);
-    my_list_1->append(4);
-    my_list_1->append(3);
-    my_list_1->append(2);
     my_list_1->append(1);
-    my_list_1->append(0);
+    my_list_1->append(2);
+    my_list_1->append(3);
+    my_list_1->append(4);
+    my_list_1->append(5);
+    my_list_1->append(6);
+    my_list_1->append(7);
 
+    Node* ptr = my_list_1->getNodeAtIdx(6);
+    ptr->next = my_list_1->getNodeAtIdx(3);
+
+    
+    Node* head = my_list_1->getHead();
+    // head->next->next->next->next = head;
+    if(my_list_1->detectLoop())
+        std::cout << "Loop Found" << std::endl;
+    else
+        std::cout << "No Loop" << std::endl;
+    
+    if(my_list_1->detectLoopFloyd())
+        std::cout << "Floyd: Loop Found" << std::endl;
+    else
+        std::cout << "Floyd: No Loop" << std::endl;
+
+    my_list_1->detectAndRemoveLoop();
     std::cout << "Created Linked list is: " << std::endl;
-    my_list_1->display();
-    std::cout << std::endl;
-
-    my_list_1->reverseSubList(6);
-    std::cout << "Reversed Linked list is: " << std::endl;
     my_list_1->display();
     std::cout << std::endl;
 
