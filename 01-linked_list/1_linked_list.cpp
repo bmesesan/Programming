@@ -12,6 +12,11 @@ class Node
         int data;
         Node *next;
 
+        Node(void) {
+            data = 0;
+            next = NULL;
+        }
+
         Node(int value) {
             data = value;
             next = NULL;
@@ -477,41 +482,95 @@ void mergeSort(LinkedList **f_list)
     free(backList);
 }
 
+// 9) Add two numbers represented by linked lists
+// Traverse the two linked lists in order to add preceding zeros in case a list is having lesser digits than the other one.
+// Start from the head node of both lists and call a recursive function for the next nodes.
+// Continue it till the end of the lists.
+// Creates a node for current digits sum and returns the carry.
+LinkedList* addTwoLists(LinkedList* f_list1, LinkedList* f_list2)
+{
+    f_list1->reverse();
+    f_list2->reverse();
+    Node* ptr1 = f_list1->getHead();
+    Node* ptr2 = f_list2->getHead();
+    LinkedList* res = new LinkedList();
+    Node* temp = NULL;
+    Node* prev = NULL;
+    int carry = 0;
+    int digit = 0;
+    int sum = 0;
+
+    while (ptr1 || ptr2) {
+        // Sum = carry + digit1 + digit2
+        sum = carry + (ptr1 ? ptr1->data : 0) + (ptr2 ? ptr2->data : 0);
+
+        // The new digit is the last number in the sum
+        digit = sum % 10;
+
+        // Carry is the first number in the sum, if the sum is a double-digit number
+        carry = sum / 10 ? sum >= 10 : 0;
+
+        // Init the temporary node
+        temp = new Node(digit);
+
+        // If the head of the resulting list is NULL, then temp is the new head
+        // Otherwise set the next PTR of prev to be the temp node
+        if (!res->getHead()) {
+            res->setHead(temp);
+        }
+        else {
+            prev->next = temp;
+        }
+        prev = temp;
+
+        // Go to the next pointer in list1 then in list2
+        if (ptr1) {
+            ptr1 = ptr1->next;
+        }
+        if (ptr2) {
+            ptr2 = ptr2->next;
+        }
+    }
+
+    // Insert the carry if the it is different than 0
+    if (carry > 0) {
+        res->append(carry);
+    }
+
+    res->reverse();
+    return res;
+}
+
 // Driver code
 int main()
 {
     // Start with the empty list
     LinkedList *my_list_1 = new LinkedList();
+    LinkedList *my_list_2 = new LinkedList();
 
-    my_list_1->append(1);
-    my_list_1->append(2);
-    my_list_1->append(3);
-    my_list_1->append(4);
     my_list_1->append(5);
     my_list_1->append(6);
-    my_list_1->append(7);
+    my_list_1->append(3);
+    my_list_1->append(0);
 
-    Node* ptr = my_list_1->getNodeAtIdx(6);
-    ptr->next = my_list_1->getNodeAtIdx(3);
 
-    
-    Node* head = my_list_1->getHead();
-    // head->next->next->next->next = head;
-    if(my_list_1->detectLoop())
-        std::cout << "Loop Found" << std::endl;
-    else
-        std::cout << "No Loop" << std::endl;
-    
-    if(my_list_1->detectLoopFloyd())
-        std::cout << "Floyd: Loop Found" << std::endl;
-    else
-        std::cout << "Floyd: No Loop" << std::endl;
+    my_list_2->append(8);
+    my_list_2->append(4);
+    my_list_2->append(2);
 
-    my_list_1->detectAndRemoveLoop();
     std::cout << "Created Linked list is: " << std::endl;
     my_list_1->display();
+    std::cout << "Created Linked list is: " << std::endl;
+    my_list_2->display();
+
+    LinkedList *my_list_3 = addTwoLists(my_list_1, my_list_2);
+    std::cout << "Resulting Linked list is: " << std::endl;
+    my_list_3->display();
+
     std::cout << std::endl;
 
     free(my_list_1);
+    free(my_list_2);
+    free(my_list_3);
     return 0;
 }
