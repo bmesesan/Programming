@@ -1,0 +1,283 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <unordered_set>
+
+using namespace std;
+
+// 0) A linked list node
+class Node
+{
+    public:
+        int data;
+        Node *next;
+        Node *prev;
+
+        Node(void) {
+            data = 0;
+            next = NULL;
+            prev = NULL;
+        }
+
+        Node(int value) {
+            data = value;
+            next = NULL;
+            prev = NULL;
+        }
+};
+
+
+class DoublyLinkedList
+{
+    private:
+        Node *m_head;
+        int m_len = 0;
+    
+    public:
+        DoublyLinkedList(void)
+        {
+            m_head = NULL;
+        }
+
+        DoublyLinkedList(Node *f_head)
+        {
+            m_head = f_head;
+        }
+
+        void setHead(Node *f_head)
+        {
+            m_head = f_head;
+        }
+
+        Node* getHead(void)
+        {
+            return m_head;   
+        }
+
+        int getNodeIdx(Node* f_node)
+        {
+            Node* current = m_head;
+            int idx = 0;
+            while (current != f_node)
+            {
+                current = current->next;
+                idx++;
+            }
+            return idx;
+        }
+
+        Node* getNodeAtIdx(int f_idx) {
+            Node* ptr = m_head;
+            for (int i = 0; i < f_idx; i++) {
+                ptr = ptr->next;
+            }
+            return ptr;
+        }
+
+        // 1) Display elements of a doubly linked list
+        void display(void)
+        {
+            Node *curr = m_head;
+            while(curr != NULL) {
+                printf("%d ", curr->data);
+                curr = curr->next;
+            }
+        }
+
+        // 2.1) Insert a new element at the Head of the DLL
+        void push(int f_data)
+        {
+            Node* myNode = new Node(f_data);
+            // Set the next ptr as the head ref
+            // Prev is set to NULL
+            myNode->next = m_head;
+            myNode->prev = NULL;
+
+            // If the head exists then set its prev as the new node
+            if (m_head != NULL) {
+                m_head->prev = myNode;
+            }
+            
+            // Set the new head
+            m_head = myNode;
+        }
+
+        // 2.2) Given a node as prev_node, insert a new node after the given node 
+        void insertAfter(Node* f_prevNode, int f_data)
+        {
+            if (f_prevNode == NULL) {
+                cout << "The given previous node cannot be NULL" << std::endl;
+                return;
+            }
+
+            Node* myNode = new Node(f_data);
+            Node* tempNext = f_prevNode->next;
+
+            // Set prev and next for the new node
+            myNode->prev = f_prevNode;
+            myNode->next = tempNext;
+
+            // Set the next for the old prev node
+            f_prevNode->next = myNode;
+
+            // Set the prev for the old next node
+            tempNext->prev = myNode;
+        }
+
+        // 2.3) Append a new node in the DLL 
+        void append(int f_data)
+        {
+            Node* temp = m_head;
+            Node* myNode = new Node(f_data);
+
+            if (m_head == NULL) {
+                m_head = myNode;
+                return;
+            }
+
+            while (temp->next != NULL) {
+                temp = temp->next;
+            }
+
+            temp->next = myNode;
+            myNode->prev = temp;
+        }
+
+        // 2.3) Given a node as next_node, insert a new node after the given node 
+        void insertBefore(Node* f_nextNode, int f_data)
+        {
+            if (f_nextNode == NULL) {
+                cout << "The given next node cannot be NULL" << std::endl;
+                return;
+            }
+
+            Node* myNode = new Node(f_data);
+            Node* tempPrev = f_nextNode->prev;
+
+            myNode->next = f_nextNode;
+            myNode->prev = tempPrev;
+
+            if (tempPrev == NULL) {
+                m_head = myNode;
+                return;
+            }
+            tempPrev->next = myNode;
+            f_nextNode->prev = myNode;
+        }
+
+        // 3) Delete a node
+        void deleteNode(Node* f_node)
+        {
+            if (f_node == NULL) {
+                std::cout << "Cannot delete Null node!" << std::endl;
+                return;
+            }
+            Node* prev = f_node->prev;
+            Node* next = f_node->next;
+            
+            // Test for head
+            if (m_head == f_node) {
+                m_head = next;
+            }
+
+            // Handle prev
+            if (prev != NULL) {
+                prev->next = next;
+            }
+            
+            // Handle next
+            if (next != NULL){
+                next->prev = prev;
+            }
+            
+            // free memory
+            free(f_node);
+        }
+
+        // 4) reverse DLL
+        // Traverse the linked list using a pointer
+        // Swap the prev and next pointers for all nodes
+        // At last, change the head pointer of the doubly linked list
+        void reverse(void)
+        {
+            Node* temp = m_head;
+
+            while (temp->next != NULL) {
+                Node* nextAux = temp->next;
+                Node* prevAux = temp->prev;
+
+                temp->prev = nextAux;
+                temp->next = prevAux;
+
+                temp = nextAux;
+            }
+
+            // Set the new head
+            temp->next = temp->prev;
+            temp->prev = NULL;
+            m_head = temp;
+        }
+};
+
+// 5) Quicksort for DLL
+// We need the quicksort function and the partition function
+void swapNodes(Node* f_node_1, Node* f_node_2)
+{
+    int aux = f_node_1->data;
+    f_node_1->data = f_node_2->data;
+    f_node_2->data = aux;
+}
+
+int partition(DoublyLinkedList* f_dll, int f_low, int f_high)
+{
+    Node* pivotNode = f_dll->getNodeAtIdx(f_high);
+    int i = f_low-1;
+
+    for (int j = f_low; j < f_high; j++) {
+        Node* currNode = f_dll->getNodeAtIdx(j);
+        if(currNode->data < pivotNode->data) {
+            i++;
+            swapNodes(currNode, f_dll->getNodeAtIdx(i));
+        }
+    }
+    i++;
+    swapNodes(pivotNode, f_dll->getNodeAtIdx(i));
+    return i;
+}
+
+
+void quicksort(DoublyLinkedList** f_dll, int f_low, int f_high)
+{
+    if ((f_low < 0) || (f_low >= f_high)) {
+        return;
+    }
+
+    cout << "DLL enter quicksort: ";
+    (*f_dll)->display();
+    cout << std::endl;
+
+    int p = partition(*f_dll, f_low, f_high);
+    quicksort(f_dll, p + 1, f_high);
+    quicksort(f_dll, f_low, p - 1);
+}
+
+
+// Driver code
+int main()
+{
+    DoublyLinkedList* dll = new DoublyLinkedList();
+
+    dll->append(6);
+    dll->append(5);
+    dll->append(4);
+    dll->append(3);
+    dll->append(2);
+ 
+    cout << "Created DLL is: ";
+    dll->display();
+    cout << std::endl;
+
+    quicksort(&dll, 0, 4);
+
+    return 0;
+}

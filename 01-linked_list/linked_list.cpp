@@ -395,9 +395,7 @@ class LinkedList
                         return true;
                     }
                 }
-                
             }
-
             return false;
         }
 };
@@ -541,36 +539,46 @@ LinkedList* addTwoLists(LinkedList* f_list1, LinkedList* f_list2)
     return res;
 }
 
+// 10) Rotate Linked List
+// Traverse the list from the beginning and stop at kth node.
+// store k’s next in a tem pointer and point k’s next to NULL then start traversing
+// from tem and keep traversing till the end and point end node’s next to start node and make tem as the new head.
+void rotateList(LinkedList *f_list, int f_k)
+{
+    Node *head = f_list->getHead();
+    Node *kNode = f_list->getNodeAtIdx(f_k - 1);
+    Node *temp = kNode;
+    
+    while (temp->next != NULL) {
+        temp = temp->next;
+    }
+    temp->next = head;
+    f_list->setHead(kNode->next);
+    kNode->next = NULL;
+}
+
+
 // Driver code
 int main()
 {
     // Start with the empty list
     LinkedList *my_list_1 = new LinkedList();
-    LinkedList *my_list_2 = new LinkedList();
 
-    my_list_1->append(5);
-    my_list_1->append(6);
-    my_list_1->append(3);
-    my_list_1->append(0);
-
-
-    my_list_2->append(8);
-    my_list_2->append(4);
-    my_list_2->append(2);
+    my_list_1->append(30);
+    my_list_1->append(40);
+    my_list_1->append(50);
+    my_list_1->append(60);
 
     std::cout << "Created Linked list is: " << std::endl;
     my_list_1->display();
-    std::cout << "Created Linked list is: " << std::endl;
-    my_list_2->display();
+    std::cout << std::endl;
 
-    LinkedList *my_list_3 = addTwoLists(my_list_1, my_list_2);
-    std::cout << "Resulting Linked list is: " << std::endl;
-    my_list_3->display();
+    rotateList(my_list_1, 2);
 
+    std::cout << "Rotated Linked list is: " << std::endl;
+    my_list_1->display();
     std::cout << std::endl;
 
     free(my_list_1);
-    free(my_list_2);
-    free(my_list_3);
     return 0;
 }
