@@ -54,6 +54,16 @@ class DoublyLinkedList
             return m_head;   
         }
 
+        Node* getLast(void)
+        {
+            Node* curr = m_head;
+            while (curr && curr->next)
+            {
+                curr = curr->next;
+            }
+            return curr;
+        }
+
         int getNodeIdx(Node* f_node)
         {
             Node* current = m_head;
@@ -217,49 +227,50 @@ class DoublyLinkedList
             temp->prev = NULL;
             m_head = temp;
         }
+
+        // 5) Quicksort for DLL
+        // We need the quicksort function and the partition function
+        void swapValues(int* f_v1, int* f_v2)
+        {
+            int temp = *f_v1;
+            *f_v1 = *f_v2;
+            *f_v2 = temp;
+        }
+
+        Node* partition(Node* f_low, Node* f_high)
+        {
+            int pivot = f_high->data;
+            Node* i = f_low->prev;
+
+            for (Node* j = f_low; j != f_high; j = j->next) {
+                if(j->data < pivot) {
+                    i = (i == NULL) ? f_low : i->next;
+                    swapValues(&(i->data), &(j->data));
+                }
+            }
+            i = i->next;
+            swapValues(&(i->data), &(f_high->data));
+            return i;
+        }
+
+        void callQS(Node* f_low, Node* f_high)
+        {
+            if (!f_high || f_low == f_high || f_low == f_high->next) {
+                return;
+            }
+
+            Node* p = partition(f_low, f_high);
+            callQS(p->next, f_high);
+            callQS(f_low, p->prev);
+        }
+
+        void quicksort(void)
+        {
+            callQS(m_head, getLast());
+        }
 };
 
-// 5) Quicksort for DLL
-// We need the quicksort function and the partition function
-void swapNodes(Node* f_node_1, Node* f_node_2)
-{
-    int aux = f_node_1->data;
-    f_node_1->data = f_node_2->data;
-    f_node_2->data = aux;
-}
-
-int partition(DoublyLinkedList* f_dll, int f_low, int f_high)
-{
-    Node* pivotNode = f_dll->getNodeAtIdx(f_high);
-    int i = f_low-1;
-
-    for (int j = f_low; j < f_high; j++) {
-        Node* currNode = f_dll->getNodeAtIdx(j);
-        if(currNode->data < pivotNode->data) {
-            i++;
-            swapNodes(currNode, f_dll->getNodeAtIdx(i));
-        }
-    }
-    i++;
-    swapNodes(pivotNode, f_dll->getNodeAtIdx(i));
-    return i;
-}
-
-
-void quicksort(DoublyLinkedList** f_dll, int f_low, int f_high)
-{
-    if ((f_low < 0) || (f_low >= f_high)) {
-        return;
-    }
-
-    cout << "DLL enter quicksort: ";
-    (*f_dll)->display();
-    cout << std::endl;
-
-    int p = partition(*f_dll, f_low, f_high);
-    quicksort(f_dll, p + 1, f_high);
-    quicksort(f_dll, f_low, p - 1);
-}
+// 6) Merge sort for DLL
 
 
 // Driver code
@@ -267,17 +278,21 @@ int main()
 {
     DoublyLinkedList* dll = new DoublyLinkedList();
 
-    dll->append(6);
+    dll->append(30);
+    dll->append(20);
+    dll->append(3);
     dll->append(5);
     dll->append(4);
-    dll->append(3);
-    dll->append(2);
  
     cout << "Created DLL is: ";
     dll->display();
     cout << std::endl;
 
-    quicksort(&dll, 0, 4);
+    dll->quicksort();
+
+    cout << "Sorted DLL is: ";
+    dll->display();
+    cout << std::endl;
 
     return 0;
 }
