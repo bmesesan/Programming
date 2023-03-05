@@ -268,9 +268,79 @@ class DoublyLinkedList
         {
             callQS(m_head, getLast());
         }
+
+        void frontBackSplit(DoublyLinkedList* f_frontList, DoublyLinkedList* f_backList)
+        {
+            Node* slow = m_head;
+            Node* fast = slow->next;
+            while (fast != NULL) {
+                fast = fast->next;
+                if (fast != NULL) {
+                    fast = fast->next;
+                    slow = slow->next;
+                }
+            }
+            f_frontList->setHead(m_head);
+            f_backList->setHead(slow->next);
+            slow->next->prev = NULL;
+            slow->next = NULL;
+        }
 };
 
 // 6) Merge sort for DLL
+
+// Merge two already sorted DLLs
+DoublyLinkedList* sortedMerge(DoublyLinkedList* f_list_1, DoublyLinkedList* f_list_2)
+{
+    DoublyLinkedList* res = new DoublyLinkedList();
+
+    Node* cnt_1 = f_list_1->getHead();
+    Node* cnt_2 = f_list_2->getHead();
+    while (cnt_1 || cnt_2) {
+        if (!cnt_1 || !cnt_2) {
+            if (!cnt_1) {
+                res->append(cnt_2->data);
+                cnt_2 = cnt_2->next;
+            }
+            if (!cnt_2) {
+                res->append(cnt_1->data);
+                cnt_1 = cnt_1->next;
+            }
+        }
+        else {
+            if (cnt_1->data < cnt_2->data){
+                res->append(cnt_1->data);
+                cnt_1 = cnt_1->next;
+            } else {
+                res->append(cnt_2->data);
+                cnt_2 = cnt_2->next;
+            }
+        }
+    }
+
+    return res;
+}
+
+void mergeSort(DoublyLinkedList** f_dll)
+{
+    DoublyLinkedList* frontList = new DoublyLinkedList();
+    DoublyLinkedList* backList = new DoublyLinkedList();
+    Node* headRed = (*f_dll)->getHead();
+
+    if (!headRed || !headRed->next) {
+        return;
+    }
+
+    (*f_dll)->frontBackSplit(frontList, backList);
+    mergeSort(&frontList);
+    mergeSort(&backList);
+
+    *f_dll = sortedMerge(frontList, backList);
+    free(frontList);
+    free(backList);
+}
+
+
 
 
 // Driver code
@@ -288,7 +358,8 @@ int main()
     dll->display();
     cout << std::endl;
 
-    dll->quicksort();
+    // dll->quicksort();
+    mergeSort(&dll);
 
     cout << "Sorted DLL is: ";
     dll->display();
