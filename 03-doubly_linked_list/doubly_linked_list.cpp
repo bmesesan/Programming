@@ -341,8 +341,6 @@ void mergeSort(DoublyLinkedList** f_dll)
 }
 
 
-
-
 // Driver code
 int main()
 {
