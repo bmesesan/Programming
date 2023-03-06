@@ -116,9 +116,52 @@ void testReverseStack(void)
     }
 }
 
+// 4) Sort a stack using recursion
+void insertElem(stack<int> &f_stack, int f_elem)
+{
+    if (f_stack.empty()) {
+        f_stack.push(f_elem);
+        return;
+    } else if (f_elem > f_stack.top())
+    {
+        f_stack.push(f_elem);
+        return;
+    }
+    int currTop = f_stack.top();
+    f_stack.pop();
+    insertElem(f_stack, f_elem);
+    f_stack.push(currTop);
+}
+
+void sortStack(stack<int> &f_stack)
+{
+    if (!f_stack.empty()) {
+        int currElem = f_stack.top();
+        f_stack.pop();
+        sortStack(f_stack);
+        insertElem(f_stack, currElem);
+    }
+    return;
+}
+
+void testSortStack(void)
+{
+    stack<int> s;
+    s.push(-3);
+    s.push(14);
+    s.push(18);
+    s.push(-5);
+    s.push(30);
+    sortStack(s);
+    while (!s.empty()) {
+        cout << s.top() << std::endl;
+        s.pop();
+    }
+}
+
 // Driver code
 int main()
 {
-    testReverseStack();
+    testSortStack();
     return 0;
 }
