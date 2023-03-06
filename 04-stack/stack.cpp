@@ -6,6 +6,7 @@
 
 using namespace std;
 
+// 1) Reverse array
 void reverseString(string &f_str)
 {
     stack<char>s;
@@ -26,6 +27,7 @@ void testReverseString(void)
     cout << "Reversed string is : " << str << std::endl;
 }
 
+// 2) Eval expression
 bool charIsKey(char f_char, const std::map<char, char>& f_map)
 {
     for (auto iter = f_map.begin(); iter != f_map.end(); iter++) {
@@ -75,9 +77,48 @@ void testEvalExpression(void)
     }
 }
 
+// 3) Reverse a stack using recursion
+void insertAtBottom(stack<int> &s, int f_elem)
+{
+    if (s.empty()) {
+        s.push(f_elem);
+        return;
+    }
+    int currElem = s.top();
+    s.pop();
+    insertAtBottom(s, f_elem);
+    s.push(currElem);
+}
+
+void reverseStack(stack<int> &s)
+{
+    if (s.size() > 0) {
+        int topElem = s.top();
+        s.pop();
+        reverseStack(s);
+        insertAtBottom(s, topElem);
+    }
+    return;
+}
+
+void testReverseStack(void)
+{
+    stack<int> s;
+    s.push(5);
+    s.push(4);
+    s.push(3);
+    s.push(2);
+    s.push(1);
+    reverseStack(s);
+    while (!s.empty()) {
+        cout << s.top() << std::endl;
+        s.pop();
+    }
+}
+
 // Driver code
 int main()
 {
-    testEvalExpression();
+    testReverseStack();
     return 0;
 }
