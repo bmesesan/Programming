@@ -50,6 +50,8 @@
         "stack": "cpp",
         "deque": "cpp",
         "ranges": "cpp",
-        "span": "cpp"
+        "span": "cpp",
+        "map": "cpp",
+        "xtree": "cpp"
     }
 }
