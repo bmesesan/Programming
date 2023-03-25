@@ -2,11 +2,16 @@
 #include <string>
 #include <stack>
 #include <map>
-#include <stdlib.h>
 
 using namespace std;
 
-// 1) Reverse array
+std::map<char, char> g_chrMap = {
+    { '(', ')' },
+    { '[', ']' },
+    { '{', '}' }
+};
+
+// 1) reverse string
 void reverseString(string &f_str)
 {
     stack<char>s;
@@ -19,12 +24,13 @@ void reverseString(string &f_str)
     }
 }
 
-void testReverseString(void)
+// 2) Check expression
+bool checkBalancedBrackets(string &f_str)
 {
-    string str = "Test Bogdan";
-    cout << "String is: " << str << std::endl;
-    reverseString(str);
-    cout << "Reversed string is : " << str << std::endl;
+    stack<char>s;
+    for (int i = 0; i < f_str.length(); i++){
+
+    }
 }
 
 // 2) Eval expression
