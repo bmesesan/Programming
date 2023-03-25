@@ -23,4 +23,33 @@ class MyQueue
         MyQueue(void);
         void enqueue(T f_data);
         void dequeue(void);
-}; // class DoublyLinkedList
+}; // class MyQueue
+
+
+// 2)  Priority Queue
+template <typename T>
+class QNodePrio {
+    public:
+        T data;
+        QNodePrio *next;
+        int prio;
+
+        QNodePrio(void);
+        QNodePrio(T f_data);
+        QNodePrio(T f_data, int f_prio);
+}; // QNode
+
+
+template <typename T>
+class MyPrioQueue
+{
+    public:
+        QNodePrio<T> *m_front;
+        QNodePrio<T> *m_rear;
+
+        MyPrioQueue(void);
+        void enqueue(T f_data, int f_prio);
+        void dequeue(void);
+        QNodePrio<T>* top(void);
+        int isEmpty(void);
+}; // class MyPrioQueue
