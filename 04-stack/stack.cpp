@@ -159,9 +159,47 @@ void testSortStack(void)
     }
 }
 
+// 5) Stock span problem
+// The stock span problem is a financial problem where we have a series of N daily price quotes for a
+// stock and we need to calculate the span of the stock’s price for all N days.
+// The span Si of the stock’s price on a given day i is defined as the maximum number of
+// consecutive days just before the given day, for which the price of the stock on the
+// current day is less than its price on the given day. 
+int* genStockSpanArr(int *f_priceArr, int f_n)
+{
+    int *result = (int*)malloc(f_n * sizeof(int));
+    stack<int> st;
+    st.push(0);
+
+    result[0] = 1;
+    for (int i = 1; i < f_n; i++) {
+        while (!st.empty() && f_priceArr[st.top()] <= f_priceArr[i]) {
+            st.pop();
+        }
+        if (st.empty()) {
+            result[i] = i + 1;
+        } else {
+            result[i] = i - st.top();
+        }
+        st.push(i);
+    }
+    return result;
+}
+
+void testStockSpanProblem(void)
+{
+    int n = 7;
+    int price[] = {100, 80, 60, 70, 60, 75, 85};
+
+    int *result = genStockSpanArr(&price[0], n);
+    for (int i = 0; i < n; i++) {
+        std::cout << result[i] << " ";
+    }
+}
+
 // Driver code
 int main()
 {
-    testSortStack();
+    testStockSpanProblem();
     return 0;
 }
