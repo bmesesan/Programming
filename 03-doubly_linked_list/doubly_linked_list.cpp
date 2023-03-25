@@ -288,7 +288,6 @@ class DoublyLinkedList
 };
 
 // 6) Merge sort for DLL
-
 // Merge two already sorted DLLs
 DoublyLinkedList* sortedMerge(DoublyLinkedList* f_list_1, DoublyLinkedList* f_list_2)
 {

@@ -197,6 +197,8 @@ void testStockSpanProblem(void)
     }
 }
 
+// 6) Special Stack
+
 // Driver code
 int main()
 {
