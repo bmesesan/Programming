@@ -24,6 +24,27 @@
                 }
             ],
             "preLaunchTask": "C/C++: g++.exe build active file"
+        },
+        {
+            "name": "05-Queue",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/05-queue/queue_tests.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/05-queue",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "C:\\Renesas\\rcar-xos\\v3.9.0\\tools\\toolchains\\mingw64\\bin\\gdb.exe",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "Build-05-Queue"
         }
     ]
 }
