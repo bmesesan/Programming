@@ -50,12 +50,6 @@
         "stack": "cpp",
         "deque": "cpp",
         "ranges": "cpp",
-        "span": "cpp",
-        "map": "cpp",
-        "xtree": "cpp",
-        "functional": "cpp",
-        "queue": "cpp",
-        "algorithm": "cpp",
-        "cassert": "cpp"
+        "span": "cpp"
     }
 }

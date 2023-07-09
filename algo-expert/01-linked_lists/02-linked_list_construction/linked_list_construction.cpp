@@ -11,7 +11,11 @@ public:
     Node *prev;
     Node *next;
 
-    Node(int value);
+    Node(int value) {
+        this->value = value;
+        prev = nullptr;
+        next = nullptr;
+    }
 };
 
 // Feel free to add new properties and methods to the class.
@@ -26,41 +30,125 @@ public:
     }
 
     void setHead(Node *node) {
-        this->head = node;
+        Node* prev_ptr = node->prev;
+        Node* next_ptr = node->next;
+        if (prev_ptr != nullptr) {
+            prev_ptr->next = next_ptr;
+            if (this->tail == node) {
+                this->tail = prev_ptr;
+            }
+        }
+        if (next_ptr != nullptr) {
+            next_ptr->prev = prev_ptr;
+        }
+
         node->prev = nullptr;
+        node->next = this->head;
+        if (this->head != nullptr) {
+            this->head->prev = node;
+        }
+        this->head = node;
+
+        if (this->tail == nullptr && this->head->next == nullptr){
+            this->tail = this->head;
+        }
     }
 
     void setTail(Node *node) {
-        this->tail = node;
+        Node* prev_ptr = node->prev;
+        Node* next_ptr = node->next;
+        if (prev_ptr != nullptr) {
+            prev_ptr->next = next_ptr;
+        }
+        if (next_ptr != nullptr) {
+            next_ptr->prev = prev_ptr;
+            if (this->head == node) {
+                this->head = next_ptr;
+            }
+        }
+
+        node->prev = this->tail;
         node->next = nullptr;
+        if (this->tail != nullptr) {
+            this->tail->next = node;
+        }
+        this->tail = node;
+
+        if (this->head == nullptr && this->tail->prev == nullptr){
+            this->head = this->tail;
+        }
     }
 
     void insertBefore(Node *node, Node *nodeToInsert) {
-        Node* cursor = this->head;
-        while (cursor != node) {
-            cursor = cursor->next;
+        Node *prev_ptr = node->prev;
+        Node *old_prev = nodeToInsert->prev;
+        Node *old_next = nodeToInsert->next;
+
+        // Handle the case when nodeToInsert is already in the Linked List
+        if (old_prev != nullptr) {
+            old_prev->next = old_next;
+            if (nodeToInsert == this->tail) {
+                this->tail = old_prev;
+            }
         }
-        nodeToInsert->prev = cursor->prev;
-        cursor->prev = nodeToInsert;
-        nodeToInsert->next = cursor;
+
+        if (old_next != nullptr) {
+            old_next->prev = old_prev;
+            if (nodeToInsert == this->head) {
+                this->head = old_next;
+            }
+        }
         
-        if (node = this->head) {
-            setHead(nodeToInsert);
+        if (prev_ptr != nullptr) {
+            prev_ptr->next = nodeToInsert;
+        }
+
+        if (node != nullptr) {
+            node->prev = nodeToInsert;
+        }
+
+        nodeToInsert->prev = prev_ptr;
+        nodeToInsert->next = node;
+
+        if (node == this->head) {
+            this->head = nodeToInsert;
+            this->head->prev = nullptr;
         }
     }
 
     void insertAfter(Node *node, Node *nodeToInsert) {
-        // Write your code here.
-        Node* cursor = this->tail;
-        while (cursor != node) {
-            cursor = cursor->prev;
-        }
-        nodeToInsert->next = cursor->next;
-        cursor->next = nodeToInsert;
-        nodeToInsert->prev = cursor;
+        Node *next_ptr = node->next;
+        Node *old_prev = nodeToInsert->prev;
+        Node *old_next = nodeToInsert->next;
 
-        if (node = this->tail) {
-            setTail(nodeToInsert);
+        // Handle the case when nodeToInsert is already in the Linked List
+        if (old_prev != nullptr) {
+            old_prev->next = old_next;
+            if (nodeToInsert == this->tail) {
+                this->tail = old_prev;
+            }
+        }
+
+        if (old_next != nullptr) {
+            old_next->prev = old_prev;
+            if (nodeToInsert == this->head) {
+                this->head = old_next;
+            }
+        }
+
+        if (node != nullptr) {
+            node->next = nodeToInsert;
+        }
+
+        if (next_ptr != nullptr) {
+            next_ptr->prev = nodeToInsert;
+        }
+
+        nodeToInsert->prev = node;
+        nodeToInsert->next = next_ptr;
+
+        if (node == this->tail) {
+            this->tail = nodeToInsert;
         }
     }
 
@@ -75,16 +163,9 @@ public:
         }
 
         if (cursor != nullptr) {
-            nodeToInsert->prev = cursor->prev;
-            nodeToInsert->next = cursor;
-            cursor->prev = nodeToInsert;
+            insertBefore(cursor, nodeToInsert);
         } else {
-            nodeToInsert->prev = this->tail;
-            nodeToInsert->next = nullptr;
             setTail(nodeToInsert);
-        }
-        if (position == 1) {
-            setHead(nodeToInsert);
         }
     }
 
@@ -103,18 +184,24 @@ public:
     }
 
     void remove(Node *node) {
-        if (node == this->head) {
-            setHead(node->next);
-        } else if (node == this->tail) {
-            setTail(node->prev);
-        } else {
-            Node* tmp_next = node->next;
-            Node* tmp_prev = node->prev;
-            tmp_prev->next = tmp_next;
-            tmp_next->prev = tmp_prev;
+        Node* old_prev = node->prev;
+        Node* old_next = node->next;
+
+        if (old_prev != nullptr) {
+            old_prev->next = old_next;
         }
 
-        free(node);
+        if (old_next != nullptr) {
+            old_next->prev = old_prev;
+        }
+
+        if (node == this->head) {
+            this->head = old_next;
+        }
+
+        if (node == this->tail) {
+            this->tail = old_prev;
+        }
     }
 
     bool containsNodeWithValue(int value) {
@@ -124,6 +211,7 @@ public:
             if (cursor->value == value) {
                 return true;
             }
+            cursor = cursor->next;
         }
         
         return false;
@@ -157,10 +245,29 @@ void bindNodes(Node *nodeOne, Node *nodeTwo) {
 
 
 void test_0(void) {
-    ;
+    DoublyLinkedList linkedList;
+    Node one(1);
+    Node two(2);
+    Node three(3);
+    Node four(4);
+    Node five(5);
+    Node six(6);
+    Node seven(7);
+    
+    linkedList.setHead(&one);
+    linkedList.insertAfter(&one, &two);
+    linkedList.insertAfter(&two, &three);
+    linkedList.insertAfter(&three, &four);
+    linkedList.insertAfter(&four, &five);
+    linkedList.insertAfter(&five, &six);
+    linkedList.insertAfter(&six, &seven);
+
+    linkedList.insertAtPosition(1, &one);
+    linkedList.insertAtPosition(2, &one);
 }
 
 int main()
 {
+    std::cout << "Hello!" << std::endl;
     test_0();
 }
