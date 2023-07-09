@@ -55,6 +55,7 @@
         "xtree": "cpp",
         "functional": "cpp",
         "queue": "cpp",
-        "algorithm": "cpp"
+        "algorithm": "cpp",
+        "cassert": "cpp"
     }
 }
