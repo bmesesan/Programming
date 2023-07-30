@@ -11,7 +11,6 @@ string bestDigits(string number, int numDigits) {
     // Write your code here.
     stack<char> myStack;
     for (int i = 0; i < number.length(); i++) {
-        std::cout << "Hello! " << i << std::endl;
         // Create myStack
         if (myStack.empty()) {
             myStack.push(number[i]);
